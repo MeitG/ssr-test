@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <link rel="stylesheet" href="../styles/navbar.css">
+    <script src="../scripts/navbar.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        
+        .content {
+            margin-top: 80px;
+            padding: 40px;
+        }
+        
+        .about-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .team-member {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+        
+        .team-member:hover {
+            transform: translateY(-5px);
+        }
+        
+        .team-member img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            object-fit: cover;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #34495e;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .mission-statement {
+            font-size: 1.2em;
+            font-style: italic;
+            color: #3498db;
+            text-align: center;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- The navbar will be inserted here by JavaScript -->
+    
+    <!-- Main Content -->
+    <div class="content">
+        <div class="about-section">
+            <h1>About Our Company</h1>
+            
+            <p class="mission-statement">
+                "Our mission is to create innovative solutions that make a difference in people's lives."
+            </p>
+            
+            <h2>Who We Are</h2>
+            <p>
+                We are a passionate team of professionals dedicated to delivering excellence in everything we do. 
+                Founded in 2024, we've been at the forefront of technological innovation, helping businesses 
+                transform their digital presence and achieve their goals.
+            </p>
+            
+            <h2>Our Team</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <img src="https://randomuser.me/api/portraits/women/1.jpg" alt="Sarah Johnson">
+                    <h3>Sarah Johnson</h3>
+                    <p>CEO & Founder</p>
+                </div>
+                
+                <div class="team-member">
+                    <img src="https://randomuser.me/api/portraits/men/2.jpg" alt="Michael Chen">
+                    <h3>Michael Chen</h3>
+                    <p>Technical Director</p>
+                </div>
+                
+                <div class="team-member">
+                    <img src="https://randomuser.me/api/portraits/women/3.jpg" alt="Emily Rodriguez">
+                    <h3>Emily Rodriguez</h3>
+                    <p>Design Lead</p>
+                </div>
+                
+                <div class="team-member">
+                    <img src="https://randomuser.me/api/portraits/men/4.jpg" alt="David Smith">
+                    <h3>David Smith</h3>
+                    <p>Development Manager</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
