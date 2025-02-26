@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <link rel="stylesheet" href="/styles/navbar.css">
+    <script src="/scripts/navbar.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        
+        .content {
+            margin-top: 80px;
+            padding: 40px;
+        }
+        
+        .contact-section {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .contact-form {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input, textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+        
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .contact-info {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .contact-item {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .contact-item h3 {
+            color: #34495e;
+            margin-bottom: 10px;
+        }
+        
+        .contact-item p {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- The navbar will be inserted here by JavaScript -->
+    
+    <!-- Main Content -->
+    <div class="content">
+        <div class="contact-section">
+            <h1>Contact Us</h1>
+            
+            <form class="contact-form">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" required></textarea>
+                </div>
+                
+                <button type="submit">Send Message</button>
+            </form>
+            
+            <div class="contact-info">
+                <div class="contact-item">
+                    <h3>Email</h3>
+                    <p>info@yourcompany.com</p>
+                </div>
+                
+                <div class="contact-item">
+                    <h3>Phone</h3>
+                    <p>+1 (555) 123-4567</p>
+                </div>
+                
+                <div class="contact-item">
+                    <h3>Address</h3>
+                    <p>123 Business Street<br>City, State 12345</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

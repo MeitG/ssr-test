@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found</title>
+    <link rel="stylesheet" href="/styles/navbar.css">
+    <script src="/scripts/navbar.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        
+        .content {
+            margin-top: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 80px);
+            text-align: center;
+        }
+        
+        .error-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+        }
+        
+        h1 {
+            font-size: 72px;
+            margin: 0;
+            color: #e74c3c;
+        }
+        
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .home-button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .home-button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <!-- The navbar will be inserted here by JavaScript -->
+    
+    <!-- Main Content -->
+    <div class="content">
+        <div class="error-container">
+            <h1>404</h1>
+            <h2>Page Not Found</h2>
+            <p>The page you are looking for doesn't exist or has been moved.</p>
+            <a href="/" class="home-button">Go to Homepage</a>
+        </div>
+    </div>
+</body>
+</html> 
