@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Fetch the navbar HTML
-    fetch('/components/navbar.html')
+    fetch('/navbar.html')
         .then(response => response.text())
         .then(data => {
             // Insert the navbar at the beginning of the body
