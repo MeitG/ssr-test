@@ -6,13 +6,28 @@ const app = express();
 
 const serveStatic = (directory: string) => {
   return (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const filePath = path.join(directory, req.url);
-    console.log(filePath);
+    console.log("req.url : ", req.url);
+    // If the URL is '/', change it to '/index.html'
+    const urlPath = req.url === '/' ? '/index.html' : req.url;
+    
+    // Check if the URL doesn't have a file extension
+    const hasFileExtension = path.extname(urlPath) !== '';
+    
+    // Determine the file path based on whether there's an extension
+    let filePath;
+    if (hasFileExtension) {
+      filePath = path.join(directory, urlPath);
+    } else {
+      filePath = path.join(directory, urlPath + '.html');
+    }
+    
+    console.log("filePath : ", filePath);
+    
     fs.access(filePath, fs.constants.F_OK, (err) => {
       if (err) {
-        next();
+        next(); // File not found
       } else {
-        res.sendFile(filePath);
+        res.sendFile(filePath); // File exists
       }
     });
   };
@@ -20,10 +35,8 @@ const serveStatic = (directory: string) => {
 
 //use our own serveStatic function :D
 app.use(serveStatic(path.join(__dirname, "public")));
-// Route for the home page
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
+
+// No need for a specific route for '/' as it's handled by the serveStatic middleware
 
 // Handle 404 errors
 app.use((req, res) => {
