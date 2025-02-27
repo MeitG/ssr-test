@@ -3,7 +3,7 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
 const CONTACTS_FILE = path.join(__dirname, '..', 'contacts.json');
-
+const USERS_FILE = path.join(__dirname, '..', 'users.json');
 // Contact data type
 interface Contact {
   id: string;
@@ -14,6 +14,12 @@ interface Contact {
   timestamp: string;
 }
 
+interface User {
+  id: string;
+  fullname: string;
+  email: string;
+  password: string;
+}
 // Initialize contacts file if it doesn't exist
 const initContactsFile = (): Contact[] => {
   try {
@@ -26,13 +32,31 @@ const initContactsFile = (): Contact[] => {
     const fileContent = fs.readFileSync(CONTACTS_FILE, 'utf8');
     return JSON.parse(fileContent);
   } catch (error) {
+    //TODO : better Error Handling
     console.error('Error initializing contacts file:', error);
-    return [];
+    throw error;
+  }
+};
+
+const initUsersFile = (): User[] => {
+  try {
+    if (!fs.existsSync(USERS_FILE)) {
+      fs.writeFileSync(USERS_FILE, JSON.stringify([], null, 2));
+      console.log('Created new users.json file');
+      return [];
+    }
+    
+    const fileContent = fs.readFileSync(USERS_FILE, 'utf8');
+    return JSON.parse(fileContent);
+  } catch (error) {
+    //TODO : better Error Handling
+    console.error('Error initializing users file:', error);
+    throw new Error('Error initializing users file');
   }
 };
 
 // Save contact to JSON file
-export const saveContactToFile = async (contactData: any): Promise<Contact> => {
+export const saveContactToFile = async (contactData: Contact): Promise<Contact> => {
   try {
     // Read existing contacts
     const contacts: Contact[] = initContactsFile();
@@ -62,3 +86,35 @@ export const saveContactToFile = async (contactData: any): Promise<Contact> => {
     throw error;
   }
 }; 
+
+export const saveUserToFile = async (userData: User): Promise<User> => {
+  try {
+    const users: User[] = initUsersFile();
+    const newUser: User = {
+      id: uuidv4(),
+      fullname: userData.fullname,
+      email: userData.email,
+      password: userData.password
+    };
+    
+    users.push(newUser);
+    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+    console.log('✅ User saved to JSON file successfully');
+    console.log('User ID:', newUser.id);
+    return newUser;
+  } catch (error) {
+    //TODO : better Error Handling
+    console.error('❌ Error saving user to file:', error);
+    throw new Error('Error saving user to file');
+  }
+};
+
+export const isUserExists = (email: string): boolean => {
+  const users: User[] = initUsersFile();
+  return users.some(user => user.email === email);
+};
+
+export const getUserByEmail = (email: string): User | undefined => {
+  const users: User[] = initUsersFile();
+  return users.find(user => user.email === email);
+};

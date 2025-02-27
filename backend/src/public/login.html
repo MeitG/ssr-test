@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In</title>
+    <link rel="stylesheet" href="/styles/navbar.css">
+    <link rel="stylesheet" href="/styles/login.css">
+    <script src="/scripts/navbar.js"></script>
+    <script src="/scripts/login.js"></script>
+</head>
+<body>
+    <!-- The navbar will be inserted here by JavaScript -->
+    
+    <!-- Main Content -->
+    <div class="content">
+        <div class="login-container">
+            <div class="form-side">
+                <div class="form-header">
+                    <h1>Welcome Back</h1>
+                    <p>Log in to your account</p>
+                </div>
+                
+                <form class="login-form">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                        <a href="#" class="forgot-password">Forgot password?</a>
+                    </div>
+                    
+                    <div class="form-group checkbox">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Remember me</label>
+                    </div>
+                    
+                    <button type="submit" class="login-button">Log In</button>
+                </form>
+                
+                <div class="alternate-action">
+                    <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+                </div>
+            </div>
+            
+            <div class="image-side">
+                <div class="overlay">
+                    <div class="welcome-text">
+                        <h2>Hello, Friend!</h2>
+                        <p>Enter your personal details and start your journey with us</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

@@ -15,6 +15,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('nav-about').classList.add('active');
             } else if (currentPath.includes('contact')) {
                 document.getElementById('nav-contact').classList.add('active');
+            } else if (currentPath.includes('login')) {
+                document.getElementById('nav-login').classList.add('active');
+            } else if (currentPath.includes('signup')) {
+                document.getElementById('nav-signup').classList.add('active');
+            } else if (currentPath.includes('profile')) {
+                document.getElementById('nav-profile').classList.add('active');
             }
         })
         .catch(error => console.error('Error loading navbar:', error));
