@@ -1,4 +1,25 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const logoutBtn = document.getElementById('logout-btn');
+    logoutBtn.addEventListener('click', () => {
+        logout()
+    });
+});
+
+function logout() {
+    fetch('/api/logout', {
+        method: 'POST',
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        window.location.href = '/login';
+    })
+    .catch(error => {
+        console.error('Error logging out:', error);
+    });
+}
+
+function getProfile() {
     fetch('/api/profile')
     .then(response => response.json())
     .then(data => {
@@ -11,13 +32,4 @@ document.addEventListener('DOMContentLoaded', () => {
     .catch(error => {
         console.error('Error fetching profile:', error);
     });
-    const logoutBtn = document.getElementById('logout-btn');
-    logoutBtn.addEventListener('click', () => {
-        logout()
-    });
-});
-
-function logout() {
-    document.cookie = "auth=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    window.location.href = '/login';
 }

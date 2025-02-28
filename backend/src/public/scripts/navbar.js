@@ -30,17 +30,17 @@ function loadNavbar() {
 /**
  * Updates navbar elements based on login state
  */
-function updateNavbarLoginState() {
-    const isUserLoggedIn = isLoggedIn();
-    
+async function updateNavbarLoginState() {
+    const isUserLoggedIn = await isLoggedIn();
+    console.log("isUserLoggedIn", isUserLoggedIn);
     // Get navigation elements
     const loginNav = document.getElementById('nav-login');
     const signupNav = document.getElementById('nav-signup');
+    const profileNav = document.getElementById('nav-profile');
     
     if (loginNav) loginNav.parentElement.classList.toggle('hidden', isUserLoggedIn);
     if (signupNav) signupNav.parentElement.classList.toggle('hidden', isUserLoggedIn);
-    
-    
+    if (profileNav) profileNav.parentElement.classList.toggle('hidden', !isUserLoggedIn);
 }
 
 /**
@@ -77,24 +77,17 @@ function highlightActivePage() {
     }
 }
 
-/**
- * Gets a cookie value by name
- * @param {string} name - Cookie name
- * @returns {string|undefined} Cookie value or undefined if not found
- */
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-    return undefined;
-}
 
-/**
- * Checks if user is currently logged in
- * @returns {boolean} True if logged in, false otherwise
- */
 function isLoggedIn() {
-    return getCookie('auth') !== undefined;
+    return fetch('/api/check-auth')
+        .then(response => response.json())
+        .then(data => {
+            return data.success;
+        })
+        .catch(error => {
+            console.error('Error checking auth:', error);
+            return false;
+        });
 }
 
 

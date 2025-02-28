@@ -1,7 +1,7 @@
 import express from 'express';
-import { saveContactToFile, saveUserToFile, isUserExists, getUserByEmail } from '../utils/fileStorage';
+import { saveContactToFile, saveUserToFile, isUserExists, getUserByEmail, getUserById } from '../utils/fileStorage';
 import dotenv from 'dotenv';
-
+import * as argon2 from "argon2";
 // Load environment variables
 dotenv.config();
 
@@ -86,7 +86,8 @@ router.post('/user', async (req, res) => {
         message: 'A user with this email already exists.' 
       });
     }
-    
+    const hashedPassword = await argon2.hash(user.password);
+    user.password = hashedPassword;
     const savedUser = await saveUserToFile(user);
     console.log(`User saved to file with ID: ${savedUser.id}`);
     
@@ -128,14 +129,17 @@ router.post('/login', async (req, res) => {
         message: 'Invalid email or password' 
       });
     }
-
     // Check password
-    if (user.password !== userData.password) {  
+    const isPasswordValid = await argon2.verify(user.password, userData.password);
+
+    if (!isPasswordValid) {
+      console.log('❌ password is not valid');
       return res.status(401).json({ 
         success: false, 
         message: 'Invalid email or password' 
       });
     }
+    console.log('✅ password is valid');
 
     const userResponse = {
       id: user.id,
@@ -144,13 +148,14 @@ router.post('/login', async (req, res) => {
     };
 
 
-    res.status(200).cookie("auth" , user.email).json({ 
+    res.status(200).cookie("auth" , user.id , {httpOnly: true}).json({ 
       success: true, 
       message: 'Login successful',
       user: userResponse
     });
+    console.log('✅ user logged in successfully');
   } catch (error) {
-    console.error('Error saving to file:', error);
+    console.error('error to verify user information:', error);
     return res.status(500).json({ 
       success: false, 
       message: 'An error occurred while logging in. Please try again later.' 
@@ -159,8 +164,8 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/profile', (req, res) => {
-  const email = req.cookies.auth;
-  const user = getUserByEmail(email);
+  const userId = req.cookies.auth;
+  const user = getUserById(userId);
   if (!user) {
     return res.status(404).json({
       success: false,
@@ -174,9 +179,27 @@ router.get('/profile', (req, res) => {
   });
 });
 
+router.post('/logout', (req, res) => {
+  res.status(200).clearCookie("auth").json({
+    success: true,
+    message: 'Logout successful'
+  });
+});
 
-// Add more API routes as needed
-// router.get('/users', ...);
-// router.post('/auth', ...);
+router.get('/check-auth', (req, res) => {
+  const userId = req.cookies.auth;
+  const user = getUserById(userId);
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: 'Unauthorized'
+    });
+  }
+  res.status(200).json({
+    success: true,
+    message: 'Authorized'
+  });
+});
+
 
 export default router; 

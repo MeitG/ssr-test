@@ -1,18 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
-    <link rel="stylesheet" href="/styles/profile.css">
-    <link rel="stylesheet" href="/styles/navbar.css">
-    <script src="/scripts/navbar.js"></script>
-    <script src="/scripts/profile.js"></script>
-</head>
-<body>
-    <!-- Navbar will be loaded here by navbar.js -->
-    
-    <div class="profile-container">
+import { User } from "./utils/fileStorage";
+
+const renderProfile = (user : User) => {
+    return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <title>Profile</title>
+        <link rel="stylesheet" href="/styles/profile.css">
+        <link rel="stylesheet" href="/styles/navbar.css">
+        <script src="/scripts/navbar.js"></script>
+        <script src="/scripts/profile.js"></script>
+    </head>
+    <body>
+        <div class="profile-container">
         <div class="profile-header">
             <div class="profile-avatar" id="profile-avatar">JD</div>
             <h1 class="profile-title">User Profile</h1>
@@ -22,12 +22,12 @@
         <div class="profile-info">
             <div class="info-item">
                 <div class="info-label">Full Name:</div>
-                <div class="info-value" id="user-fullname">Loading...</div>
+                <div class="info-value" id="user-fullname">${user.fullname}</div>
             </div>
             
             <div class="info-item">
                 <div class="info-label">Email:</div>
-                <div class="info-value" id="user-email">Loading...</div>
+                <div class="info-value" id="user-email">${user.email}</div>
             </div>
             
             <div style="text-align: center;">
@@ -36,7 +36,9 @@
             </div>
         </div>
     </div>
-    
-    
-</body>
-</html>
+    </body>
+    </html>
+    `
+}
+
+export default renderProfile;

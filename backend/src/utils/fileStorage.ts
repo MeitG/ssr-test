@@ -14,7 +14,7 @@ interface Contact {
   timestamp: string;
 }
 
-interface User {
+export interface User {
   id: string;
   fullname: string;
   email: string;
@@ -117,4 +117,9 @@ export const isUserExists = (email: string): boolean => {
 export const getUserByEmail = (email: string): User | undefined => {
   const users: User[] = initUsersFile();
   return users.find(user => user.email === email);
+};
+
+export const getUserById = (id: string): User | undefined => {
+  const users: User[] = initUsersFile();
+  return users.find(user => user.id === id);
 };

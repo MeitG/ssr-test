@@ -6,6 +6,8 @@ import apiRoutes from './routes/api';
 import staticRoutes from './routes/static';
 import {auth} from './middleware/auth'
 import { serveStatic } from "./middleware/staticFiles";
+import renderProfile from "./serverRender";
+import { getUserById } from "./utils/fileStorage";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -26,6 +28,15 @@ app.use('/api', apiRoutes);
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
+});
+
+app.get('/profile', (req, res , next) => {
+  const user = getUserById(req.cookies.auth);
+  if (!user) {
+    res.redirect('/login');
+    return;
+  }
+  res.send(renderProfile(user));
 });
 
 app.get('/:page', (req, res) => {
