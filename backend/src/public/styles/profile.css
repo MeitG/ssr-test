@@ -82,10 +82,28 @@
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s;
+    margin-right: 10px;
 }
 
 .edit-btn:hover {
     background-color: #3a7bc8;
+}
+
+.logout-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 30px;
+    background-color: #e24a4a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+    background-color: #c83a3a;
 }
 
 /* Responsive adjustments */

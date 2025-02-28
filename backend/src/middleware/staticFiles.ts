@@ -12,19 +12,17 @@ export const serveStatic = (directory: string) => {
     if (req.method !== 'GET') {
       return next();
     }
-    
-    // If the URL is '/', serve index.html
-    const urlPath = req.url === '/' ? '/index.html' : req.url;
-    
-    // Determine the file path, adding .html extension if no extension exists
-    const hasFileExtension = path.extname(urlPath) !== '';
-    const filePath = hasFileExtension 
-      ? path.join(directory, urlPath)
-      : path.join(directory, urlPath + '.html');
-    
-    // Check if file exists and serve it
-    fs.access(filePath, fs.constants.F_OK, (err) => {
-      err ? next() : res.sendFile(filePath);
-    });
-  };
+    const filePath = path.join(directory , req.url)
+    fs.stat(filePath , (err , stats) => {
+      if (err || !stats.isFile()) {
+        return next()
+      }
+      else if (stats.isFile()) {
+        res.sendFile(filePath)
+      }
+      else {
+        next();
+      }
+    })
+  }; 
 }; 

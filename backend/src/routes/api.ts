@@ -144,7 +144,7 @@ router.post('/login', async (req, res) => {
     };
 
 
-    res.status(200).cookie("login" , "ahsannt").json({ 
+    res.status(200).cookie("auth" , user.email).json({ 
       success: true, 
       message: 'Login successful',
       user: userResponse
@@ -157,7 +157,22 @@ router.post('/login', async (req, res) => {
     });
   }
 });
-  
+
+router.get('/profile', (req, res) => {
+  const email = req.cookies.auth;
+  const user = getUserByEmail(email);
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: 'user not found'
+    });
+  }
+  res.status(200).json({
+    success: true,
+    message: 'Profile fetched successfully',
+    user: user
+  });
+});
 
 
 // Add more API routes as needed

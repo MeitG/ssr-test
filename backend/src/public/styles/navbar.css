@@ -50,3 +50,7 @@
 .navbar li a:hover::after {
     width: 100%;
 } 
+
+.hidden {
+    display: none;
+}

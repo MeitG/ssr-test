@@ -8,6 +8,8 @@ dotenv.config();
 const router = express.Router();
 const PUBLIC_DIR = path.join(__dirname, '..', process.env.PUBLIC_DIR || 'public');
 
+
+
 // Serve static files
 router.use(serveStatic(PUBLIC_DIR));
 
