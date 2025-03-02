@@ -1,14 +1,25 @@
 import express from 'express';
-import { saveContactToFile, saveUserToFile, isUserExists, getUserByEmail, getUserById } from '../utils/fileStorage';
+import { saveContactToFile, saveUserToFile, isUserExists, getUserByEmail, getUserById, saveSession, getSession, deleteSession } from '../utils/fileStorage';
 import dotenv from 'dotenv';
 import * as argon2 from "argon2";
+import { v4 as uuidv4 } from 'uuid';
+import { Session } from '../utils/types';
+
 // Load environment variables
 dotenv.config();
 
 const router = express.Router();
 
-// Contact form submission handler
-router.post('/contact', async (req, res) => {
+// Define routes with their respective handlers
+router.post('/contact', handleContactSubmission);
+router.post('/user', handleUserCreation);
+router.post('/login', handleLogin);
+router.get('/profile', handleGetProfile);
+router.post('/logout', handleLogout);
+router.get('/check-auth', handleCheckAuth);
+
+// Contact form handler function
+async function handleContactSubmission(req: express.Request, res: express.Response) {
   console.log('📨 Contact form submission received');
   console.log('Request body:', req.body);
   
@@ -64,9 +75,10 @@ router.post('/contact', async (req, res) => {
       message: 'An error occurred while processing your submission. Please try again later.' 
     });
   }
-});
+}
 
-router.post('/user', async (req, res) => {
+// User creation handler function
+async function handleUserCreation(req: express.Request, res: express.Response) {
   console.log('📨 User form submission received');
   console.log('Request body:', req.body);
   const user = req.body;
@@ -103,11 +115,10 @@ router.post('/user', async (req, res) => {
       message: 'An error occurred while creating your account. Please try again later.' 
     });
   }
-});
+}
 
-//Login route
-
-router.post('/login', async (req, res) => {
+// Login handler function
+async function handleLogin(req: express.Request, res: express.Response) {
   console.log('📨 Login form submission received');
   console.log('Request body:', req.body);
   const userData = req.body;
@@ -147,8 +158,11 @@ router.post('/login', async (req, res) => {
       fullname: user.fullname
     };
 
+    const userSession = createSession(user.id);
+    const sessionId = saveSession(userSession);
 
-    res.status(200).cookie("auth" , user.id , {httpOnly: true}).json({ 
+
+    res.status(200).cookie("session_ID" , sessionId , {httpOnly: true}).json({ 
       success: true, 
       message: 'Login successful',
       user: userResponse
@@ -161,15 +175,23 @@ router.post('/login', async (req, res) => {
       message: 'An error occurred while logging in. Please try again later.' 
     });
   }
-});
+}
 
-router.get('/profile', (req, res) => {
-  const userId = req.cookies.auth;
-  const user = getUserById(userId);
-  if (!user) {
+// Profile handler function
+function handleGetProfile(req: express.Request, res: express.Response) {
+  const sessionId = req.cookies.session_ID;
+  const userSession = getSession(sessionId);
+  if (!userSession) {
     return res.status(404).json({
       success: false,
       message: 'user not found'
+    });
+  }
+  const user = getUserById(userSession.userId);
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: 'user no longer exists it may be deleted'
     });
   }
   res.status(200).json({
@@ -177,29 +199,65 @@ router.get('/profile', (req, res) => {
     message: 'Profile fetched successfully',
     user: user
   });
-});
+}
 
-router.post('/logout', (req, res) => {
-  res.status(200).clearCookie("auth").json({
+// Logout handler function
+function handleLogout(req: express.Request, res: express.Response) {
+  const sessionId = req.cookies.session_ID;
+  if (!sessionId) {
+    return res.status(401).json({
+      success: false,
+      message: 'session id does not exist'
+    });
+  }
+  deleteSession(sessionId);
+  res.status(200).clearCookie("session_ID").json({
     success: true,
     message: 'Logout successful'
   });
-});
+}
 
-router.get('/check-auth', (req, res) => {
-  const userId = req.cookies.auth;
-  const user = getUserById(userId);
+// Auth check handler function
+function handleCheckAuth(req: express.Request, res: express.Response) {
+  const sessionId = req.cookies.session_ID;
+  if (!sessionId) {
+    return res.status(401).json({
+      success: false,
+      message: 'session id does not exist'
+    });
+  }
+  const userSession = getSession(sessionId);
+  if (!userSession) {
+    return res.status(401).json({
+      success: false,
+      message: 'session id does not exist'
+    });
+  }
+  const user = getUserById(userSession.userId);
   if (!user) {
     return res.status(401).json({
       success: false,
-      message: 'Unauthorized'
+      message: 'user no longer exists it may be deleted'
     });
   }
   res.status(200).json({
     success: true,
-    message: 'Authorized'
+    message: 'Authorized',
+    user: user
   });
-});
+}
+
+// Session creation function
+function createSession(userId: string): Session {
+  const sessionId = uuidv4();
+  const session = {
+    id: sessionId,
+    userId: userId,
+    createdAt: new Date().toISOString()
+  };
+  return session;
+}
+
 
 
 export default router; 
