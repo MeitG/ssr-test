@@ -9,3 +9,8 @@ export const FILE_PATHS = {
   USERS_FILE: path.join(DATA_STORAGE_DIR, "users.json"),
   SESSIONS_FILE: path.join(DATA_STORAGE_DIR, "sessions.json"),
 };
+
+// Cookie configuration
+export const COOKIES = {
+  SESSION_ID: "session_ID",
+};

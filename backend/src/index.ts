@@ -3,11 +3,11 @@ import path from "path";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import apiRoutes from "./routes/api";
-import { auth } from "./middleware/auth";
 import { serveStatic } from "./middleware/staticFiles";
 import { AuthRequest } from "./utils/types";
 import render from "./serverRender";
 import Profile from "./components/profile";
+import { requireAuth } from "./middleware/auth";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -29,20 +29,15 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, "index.html"));
 });
 
-app.get("/profile", auth, (req: AuthRequest, res) => {
-  const auth = req.auth;
-  if (auth?.isAuthenticated) {
-    const user = auth.user;
-    res.send(
-      render(Profile(user!).render(), {
-        title: "Profile",
-        styles: ["/styles/profile.css", "/styles/navbar.css"],
-        scripts: ["/scripts/profile.js", "/scripts/navbar.js"],
-      })
-    );
-  } else {
-    res.redirect(302, "/login");
-  }
+app.get("/profile", requireAuth, (req: AuthRequest, res) => {
+  const user = req.auth!.user!;
+  res.send(
+    render(Profile(user).render(), {
+      title: "Profile",
+      styles: ["/styles/profile.css", "/styles/navbar.css"],
+      scripts: ["/scripts/profile.js", "/scripts/navbar.js"],
+    })
+  );
 });
 
 app.get("/:page", (req, res) => {
