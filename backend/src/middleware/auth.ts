@@ -1,46 +1,22 @@
 import { Response, NextFunction, Request } from "express";
-import { getSession, getUserById } from "../utils/fileStorage";
 import { AuthRequest } from "../utils/types";
 import { COOKIES } from "../utils/config";
+import { AuthService } from "../services/AuthService";
+import { UserRepository } from "../repositories/UserRepository";
+
+const authService = new AuthService(new UserRepository());
 
 /**
  * Base authentication middleware that sets req.auth data
  * but doesn't block unauthorized requests
  */
-export const setAuthInfo = (
+export const setAuthInfo = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
 ) => {
-  req.auth = {
-    isAuthenticated: false,
-    user: undefined,
-    sessionID: undefined,
-  };
-
-  const sessionId = getAndValidateSessionIdFromCookie(req);
-  if (!sessionId) {
-    return next();
-  }
-
-  const session = getSession(sessionId);
-  if (!session) {
-    console.log("No session found for sessionId", sessionId);
-    return next();
-  }
-
-  const user = getUserById(session.userId);
-  if (!user) {
-    console.log("No user found for session", sessionId);
-    return next();
-  }
-
-  req.auth = {
-    isAuthenticated: true,
-    user: { id: user.id, fullname: user.fullname, email: user.email },
-    sessionID: sessionId,
-  };
-
+  const auth = await authService.authenticateUserBySessionId(req);
+  req.auth = auth;
   next();
 };
 

@@ -1,24 +1,18 @@
 import express from "express";
-import {
-  saveContactToFile,
-  saveUserToFile,
-  isUserExists,
-  getUserByEmail,
-  getUserById,
-  saveSession,
-  getSession,
-  deleteSession,
-} from "../utils/fileStorage";
+import { saveContactToFile, deleteSession } from "../utils/fileStorage";
 import dotenv from "dotenv";
-import * as argon2 from "argon2";
-import { v4 as uuidv4 } from "uuid";
-import { AuthRequest, Session } from "../utils/types";
+import { AuthRequest, UserRegister } from "../utils/types";
 import { requireApiAuth } from "../middleware/auth";
+import { AuthService } from "../services/AuthService";
+import { UserRepository } from "../repositories/UserRepository";
+import { COOKIES } from "../utils/config";
 
 // Load environment variables
 dotenv.config();
 
 const router = express.Router();
+
+const authService = new AuthService(new UserRepository());
 
 // Define routes with their respective handlers
 
@@ -28,7 +22,7 @@ router.post("/logout", requireApiAuth, handleLogout);
 
 //routes that do not require authentication
 router.post("/contact", handleContactSubmission);
-router.post("/user", handleUserCreation);
+router.post("/register", handleUserRegister);
 router.post("/login", handleLogin);
 router.get("/check-auth", handleCheckAuth);
 
@@ -103,39 +97,32 @@ async function handleContactSubmission(
 }
 
 // User creation handler function
-async function handleUserCreation(req: express.Request, res: express.Response) {
-  console.log("📨 User form submission received");
-  console.log("Request body:", req.body);
-  const user = req.body;
-  // Validate required fields
-  if (!user.fullname || !user.email || !user.password) {
-    return res.status(400).json({
-      success: false,
-      message:
-        "Missing required fields. Please provide fullname, email, and password.",
-    });
-  }
-
+async function handleUserRegister(req: express.Request, res: express.Response) {
+  const email = req.body.email;
+  const fullname = req.body.fullname;
+  const password = req.body.password;
+  const userToRegister: UserRegister = {
+    email,
+    fullname,
+    password,
+  };
+  //TODO : i will implement error handling and data validation later :D)
   try {
-    // Check if user already exists
-    if (isUserExists(user.email)) {
-      return res.status(409).json({
+    const user = await authService.createUser(userToRegister);
+    if (!user) {
+      return res.status(400).json({
         success: false,
-        message: "A user with this email already exists.",
+        message: "User already exists",
       });
     }
-    const hashedPassword = await argon2.hash(user.password);
-    user.password = hashedPassword;
-    const savedUser = await saveUserToFile(user);
-    console.log(`User saved to file with ID: ${savedUser.id}`);
-
+    console.log(`User created with ID: ${user.id}`);
     res.status(201).json({
       success: true,
       message: "User created successfully",
-      userId: savedUser.id,
+      user: user,
     });
   } catch (error) {
-    console.error("Error saving to file:", error);
+    console.error("Error creating user:", error);
     return res.status(500).json({
       success: false,
       message:
@@ -146,62 +133,36 @@ async function handleUserCreation(req: express.Request, res: express.Response) {
 
 // Login handler function
 async function handleLogin(req: express.Request, res: express.Response) {
+  //TODO : i will implement error handling and data validation later :D)
   console.log("📨 Login form submission received");
   console.log("Request body:", req.body);
   const userData = req.body;
-  // Validate required fields
-  if (!userData.email || !userData.password) {
-    return res.status(400).json({
-      success: false,
-      message: "Missing required fields. Please provide email and password.",
-    });
-  }
-
   try {
-    const normalizedEmail = userData.email.toLowerCase().trim();
-    const user = getUserByEmail(normalizedEmail);
-
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid email or password",
-      });
-    }
-    // Check password
-    const isPasswordValid = await argon2.verify(
-      user.password,
+    const authInfo = await authService.authenticateUserByEmailAndPassword(
+      userData.email,
       userData.password
     );
-
-    if (!isPasswordValid) {
-      console.log("❌ password is not valid");
-      return res.status(401).json({
+    if (authInfo.isAuthenticated) {
+      res
+        .status(200)
+        .cookie(COOKIES.SESSION_ID, authInfo.sessionID, { httpOnly: true })
+        .json({
+          success: true,
+          message: "Login successful",
+          user: authInfo.user,
+          sessionID: authInfo.sessionID,
+        });
+    } else {
+      res.status(401).json({
         success: false,
         message: "Invalid email or password",
       });
     }
-    console.log("✅ password is valid");
-
-    const userResponse = {
-      id: user.id,
-      email: user.email,
-      fullname: user.fullname,
-    };
-
-    const userSession = createSession(user.id);
-    const sessionId = saveSession(userSession);
-
-    res.status(200).cookie("session_ID", sessionId, { httpOnly: true }).json({
-      success: true,
-      message: "Login successful",
-      user: userResponse,
-    });
-    console.log("✅ user logged in successfully");
   } catch (error) {
-    console.error("error to verify user information:", error);
+    console.error("Error authenticating user:", error);
     return res.status(500).json({
       success: false,
-      message: "An error occurred while logging in. Please try again later.",
+      message: "Internal server",
     });
   }
 }
@@ -228,44 +189,20 @@ function handleLogout(req: AuthRequest, res: express.Response) {
 }
 
 // Auth check handler function
-function handleCheckAuth(req: express.Request, res: express.Response) {
-  const sessionId = req.cookies.session_ID;
-  if (!sessionId) {
+//boo an miad bala nesbat bala nesbat
+async function handleCheckAuth(req: express.Request, res: express.Response) {
+  const auth = await authService.authenticateUserBySessionId(req);
+  if (!auth.isAuthenticated) {
     return res.status(401).json({
       success: false,
-      message: "session id does not exist",
-    });
-  }
-  const userSession = getSession(sessionId);
-  if (!userSession) {
-    return res.status(401).json({
-      success: false,
-      message: "session id does not exist",
-    });
-  }
-  const user = getUserById(userSession.userId);
-  if (!user) {
-    return res.status(401).json({
-      success: false,
-      message: "user no longer exists it may be deleted",
+      message: "unauthorized",
     });
   }
   res.status(200).json({
     success: true,
-    message: "Authorized",
-    user: user,
+    message: "authorized",
+    user: auth.user,
   });
-}
-
-// Session creation function
-function createSession(userId: string): Session {
-  const sessionId = uuidv4();
-  const session = {
-    id: sessionId,
-    userId: userId,
-    createdAt: new Date().toISOString(),
-  };
-  return session;
 }
 
 export default router;
